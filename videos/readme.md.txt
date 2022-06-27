@@ -1,1 +1,0 @@
-This is where all the old videos will be stored.
