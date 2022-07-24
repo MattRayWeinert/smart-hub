@@ -25,7 +25,8 @@ from PyQt5.QtWidgets import (
     QAbstractItemView,
     QListWidget,
     QListWidgetItem,
-    QHBoxLayout
+    QHBoxLayout,
+    QCheckBox
 )
  
 class App(QWidget):
@@ -45,6 +46,8 @@ class App(QWidget):
         self.recording = (VideoRecording)
         self.live = (VideoStream)
         self.type_of_stream = "home"
+        self.list_widget
+        self.disable_recording_value = False
  
     def initUI(self):
         # self.setWindowTitle(self.title)
@@ -66,28 +69,37 @@ class App(QWidget):
         # Create first widget for table (left column)
         self.rtsp_form = QWidget()
         self.rtsp_form_layout = QFormLayout() # Layout to place the RTSP credential form
-        self.rtsp_form_layout.setAlignment(Qt.AlignHCenter)
+        self.rtsp_form_layout.setAlignment(Qt.AlignVCenter)
         self.user_input_username = QLineEdit("")
         self.user_input_password = QLineEdit("")
         self.user_input_password.setEchoMode(QLineEdit.Password)
         self.user_input_ip = QLineEdit("")
         self.submit_btn = QPushButton("Submit")
+        font = self.font()
+        font.setPointSize(16)
         self.rtsp_username = QLabel("Enter Username:")
+        self.rtsp_username.setFont(font)
         self.rtsp_password = QLabel("Enter Password:")
+        self.rtsp_password.setFont(font)
         self.submit_btn.clicked.connect(lambda:self.submit_btn_clicked())
+        self.disable_recording = QCheckBox("Disable Recording", self)
+        self.disable_recording.setIconSize(QtCore.QSize(32, 32))
+        self.disable_recording.setStyleSheet("QCheckBox{ font-size: 20px; } QCheckBox::indicator{ width: 40px; height: 40px; }")
+        self.disable_recording.clicked.connect(self.disable_recording_clicked)
         self.rtsp_form_layout.addRow(self.rtsp_username)
         self.rtsp_form_layout.addRow(self.user_input_username)
         self.rtsp_form_layout.addRow(self.rtsp_password)
         self.rtsp_form_layout.addRow(self.user_input_password)
         self.rtsp_form_layout.addRow(self.submit_btn)
-        self.rtsp_form_layout.setFormAlignment(Qt.AlignVCenter)
-        self.rtsp_form.setStyleSheet('width: 500px;')
+        self.rtsp_form_layout.addRow(self.disable_recording)
+        self.rtsp_form_layout.setFormAlignment(Qt.AlignTop)
         self.rtsp_form.setLayout(self.rtsp_form_layout)
  
         # Create second widget for table (middle column)
 #         self.im = QPixmap("./dst/image.png")
         self.im = QPixmap(".//dst//image.png")
         self.label = QLabel()
+        self.label.setAlignment(Qt.AlignHCenter)
         self.label.setPixmap(self.im)
  
         # Create third widget for table (right column)
@@ -95,7 +107,10 @@ class App(QWidget):
 #         arr = os.listdir('/home/seniordesign/Desktop/smarthub/videos')
         arr = os.listdir('C:\\Users\\matth\\Desktop\\videos')
         for file in arr:
-            QListWidgetItem(file, self.list_widget)
+            list_item = QListWidgetItem(file, self.list_widget)
+            font = self.font()
+            font.setPointSize(16)
+            list_item.setFont(font)
         self.list_widget.clicked.connect(self.list_item_clicked)
  
         # Creating the table of widgets
@@ -125,39 +140,43 @@ class App(QWidget):
  
         self.back_button = QPushButton(self)
         self.back_button.setVisible(False)
-        self.back_button.setGeometry(200, 150, 200, 40)
         self.back_button.clicked.connect(self.back_button_clicked)
         self.back_button.setIcon(QtGui.QIcon(".//dst//back.png"))
         self.back_button.setIconSize(QtCore.QSize(32, 32))
-        self.back_button.setStyleSheet("QPushButton::{ border: black 1px solid; border-radius: 25px} QPushButton::hover{};}")
+        self.back_button.setStyleSheet("QPushButton::hover{background-color : gray; border: 1px solid black;}")
  
         self.pause_button = QPushButton(self)
         self.pause_button.setVisible(False)
         self.pause_button.clicked.connect(self.pause_button_clicked)
         self.pause_button.setIcon(QtGui.QIcon(".//dst//pause.png"))
         self.pause_button.setIconSize(QtCore.QSize(32, 32))
-        self.pause_button.setStyleSheet("QPushButton::{ border: black 1px solid; border-radius: 25px} QPushButton::hover{};}")
+        self.pause_button.setStyleSheet("QPushButton::hover{background-color : gray; border: 1px solid black;}")
  
         self.play_button = QPushButton(self)
         self.play_button.setVisible(False)
         self.play_button.clicked.connect(self.play_button_clicked)
         self.play_button.setIcon(QtGui.QIcon(".//dst//play.png"))
         self.play_button.setIconSize(QtCore.QSize(32, 32))
-        self.play_button.setStyleSheet("QPushButton::{ border: black 1px solid; border-radius: 25px} QPushButton::hover{};}")
+        self.play_button.setStyleSheet("QPushButton::hover{background-color : gray; border: 1px solid black;}")
  
         self.fast_forward = QPushButton(self)
         self.fast_forward.setVisible(False)
         self.fast_forward.clicked.connect(self.fast_forward_button_clicked)
         self.fast_forward.setIcon(QtGui.QIcon(".//dst//fast-forward.png"))
         self.fast_forward.setIconSize(QtCore.QSize(32, 32))
-        self.fast_forward.setStyleSheet("QPushButton::{ border: black 1px solid; border-radius: 25px} QPushButton::hover{};}")
+        self.fast_forward.setStyleSheet("QPushButton::hover{background-color : gray; border: 1px solid black;}")
  
         self.rewind_button = QPushButton(self)
         self.rewind_button.setVisible(False)
         self.rewind_button.clicked.connect(self.rewind_button_clicked)
         self.rewind_button.setIcon(QtGui.QIcon(".//dst//rewind.png"))
         self.rewind_button.setIconSize(QtCore.QSize(32, 32))
-        self.rewind_button.setStyleSheet("QPushButton::{ border: black 1px solid; border-radius: 25px} QPushButton::hover{background-color : gray;}")
+        self.rewind_button.setStyleSheet("QPushButton::hover{background-color : gray; border: 1px solid black;}")
+
+        self.disable_ai = QCheckBox("Disable Detection", self)
+        self.disable_ai.setIconSize(QtCore.QSize(32, 32))
+        self.disable_ai.setStyleSheet("QCheckBox{ font-size: 20px; } QCheckBox::indicator{ width: 40px; height: 40px; }")
+        self.disable_ai.clicked.connect(self.disable_ai_clicked)
 
         self.button_layout = QHBoxLayout()
         self.button_layout.addWidget(self.rewind_button)
@@ -165,6 +184,8 @@ class App(QWidget):
         self.button_layout.addWidget(self.play_button)
         self.button_layout.addWidget(self.pause_button)
         self.button_layout.addWidget(self.fast_forward)
+        self.button_layout.addWidget(self.disable_ai)
+
  
         self.image_label = QLabel(self) # Label used to hold the image
         self.image_label.resize(self.display_width, self.display_height)
@@ -190,7 +211,8 @@ class App(QWidget):
         self.pause_button.setVisible(False)
         self.fast_forward.setVisible(False)
         self.rewind_button.setVisible(False)
-        self.live = self.thread = VideoStream(self.rtsp_url, self.image_label, self.display_width, self.display_height) # Starts the RTSP stream
+        self.disable_ai.setVisible(True)
+        self.live = self.thread = VideoStream(self.rtsp_url, self.image_label, self.disable_recording_value)
         self.thread.change_pixels_obj.connect(self.thread.update_image)
         self.thread.start()
  
@@ -200,7 +222,8 @@ class App(QWidget):
         self.pause_button.setVisible(True)
         self.fast_forward.setVisible(True)
         self.rewind_button.setVisible(True)
-        self.recording = self.thread = VideoRecording(self.rtsp_url, self.image_label, self.display_width, self.display_height, self.fps) # Starts the RTSP stream
+        self.disable_ai.setVisible(False)
+        self.recording = self.thread = VideoRecording(self.rtsp_url, self.image_label) # Starts the RTSP stream
         self.thread.change_pixels_obj.connect(self.thread.update_image)
         self.thread.start()
  
@@ -208,13 +231,24 @@ class App(QWidget):
         self.user_input = "rtsp://" + self.user_input_username.text() + ":" + self.user_input_password.text() + "@192.168.1.243:554//h264Preview_01_main"
         self.type_of_stream = "live"
         self.store_user_input()
-        self.display_rtsp_stream()
+        try:
+            self.display_rtsp_stream()
+        except:
+            print("error")
  
     def list_item_clicked(self):
         self.type_of_stream = "recording"
         self.item = self.list_widget.currentItem().text()
         self.store_item_input()
         self.display_rtsp_recording()
+
+    def disable_ai_clicked(self):
+        self.live.disable_ai = not self.live.disable_ai
+
+    def disable_recording_clicked(self):
+        self.disable_recording_value = not self.disable_recording_value
+        print(self.disable_recording_value)
+
  
     def pause_button_clicked(self):
         self.recording.pause = True
@@ -228,17 +262,31 @@ class App(QWidget):
         if(self.type_of_stream == "recording"):
             self.recording.close_stream()
         if(self.type_of_stream == "live"):
-            self.live.close_stream()
+            if(self.disable_recording_value == False):
+                self.live.close_stream()
+                arr = os.listdir('C:\\Users\\matth\\Desktop\\videos')
+                list_item = QListWidgetItem(arr[-1], self.list_widget)
+                font = self.font()
+                font.setPointSize(16)
+                list_item.setFont(font)
  
     def rewind_button_clicked(self):
+        if(self.recording.fps == 15):
+            self.recording.fps = 60
+        if(self.recording.fps == 60):
+            self.recording.fps = 15
         self.recording.rewind = True
  
     def fast_forward_button_clicked(self):
-        self.recording.fps = int(self.recording.fps / 2)
+        if(self.recording.fps == 15):
+            self.recording.fps = 60
+        if(self.recording.fps == 60):
+            self.recording.fps = 15
+        self.recording.fast_forward = True
  
     def store_item_input(self):
 #         self.rtsp_url = self.save_rtsp_url('/home/seniordesign/Desktop/smarthub/videos/' + self.item)
-        self.rtsp_url = self.save_rtsp_url('C:\\Users\\matth\Desktop\\videos\\' + self.item)
+        self.rtsp_url = ('C:\\Users\\matth\Desktop\\videos\\' + self.item)
         
     def store_user_input(self):
         self.rtsp_url = self.save_rtsp_url(self.user_input)
@@ -270,13 +318,15 @@ class VideoStream(QThread, object):
     # When placed inside init, the code code does not work
     change_pixels_obj = pyqtSignal(np.ndarray) # Object for updating frames
  
-    def __init__(self, rtsp_str, image_label, display_width, display_height):
+    def __init__(self, rtsp_str, image_label, disable_recording_value):
         super().__init__()
         self.rtsp_str = rtsp_str
         self.image_label = image_label
-        self.display_width = 900
-        self.display_height = 540
- 
+        self.display_width = 640
+        self.display_height = 480
+        self.disable_ai = False
+        self.disable_recording = disable_recording_value
+
         # Capture RTSP stream
         while(True):
             self.cap = cv2.VideoCapture(self.rtsp_str)
@@ -288,22 +338,20 @@ class VideoStream(QThread, object):
         # Initializing the HOG person detector
         hog = cv2.HOGDescriptor()
         hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
- 
         frame_width = int(self.cap.get(3))
         frame_height = int(self.cap.get(4))
         size = (frame_width, frame_height)
- 
+
         ret, frame = self.cap.read()
- 
-        # Video codec and output destination - filename formatted: MonthDayYear - HourMinuteSecond
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-#         out = cv2.VideoWriter('/home/seniordesign/Desktop/smarthub/videos/' + time.strftime("%m%d%Y-%H%M%S") + '.mp4', fourcc, 20.0, size)
-        out = cv2.VideoWriter('C://Users//matth//Desktop//videos//' + time.strftime("%m%d%Y-%H%M%S") + '.avi', fourcc, 20.0, size)
+
+        if(self.disable_recording == False):
+           fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+           out = cv2.VideoWriter('C://Users//matth//Desktop//videos//' + time.strftime("%m%d%Y-%H%M%S") + '.avi', fourcc, 20.0, size)
         
         def detect_human(detection_frame):
             # Detecting all the regions in the Image that has a pedestrians inside it
             # For speedup, increase scale in range (1.0 - 1.5), increase winStride 
-            (regions, _) = hog.detectMultiScale(detection_frame, winStride=(10, 10), padding=(4, 4), scale=1.4)
+            (regions, _) = hog.detectMultiScale(detection_frame, winStride=(8, 8), padding=(4, 4), scale=1.1)
             if (len(regions) == 1): # len == 0 when no detection found
                 print("Human Detected!  Results: " + str(regions))
                 
@@ -316,7 +364,10 @@ class VideoStream(QThread, object):
                 detection_frame = imutils.resize(frame, width=min(400, frame.shape[1]))
                 detect_human(detection_frame)
                 self.change_pixels_obj.emit(frame)
-                out.write(frame)
+                if(self.disable_recording == False):
+                    out.write(frame)
+                # if cv2.waitKey(30) & 0xFF == ord('q'):
+                #     break
  
     # Function gets called for each new frame
     @pyqtSlot(np.ndarray)
@@ -342,13 +393,12 @@ class VideoRecording(QThread, object):
     # When placed inside init, the code code does not work
     change_pixels_obj = pyqtSignal(np.ndarray) # Object for updating frames
  
-    def __init__(self, rtsp_str, image_label, display_width, display_height, fps):
+    def __init__(self, rtsp_str, image_label):
         super().__init__()
         self.rtsp_str = rtsp_str
         self.image_label = image_label
-        self.display_width = 852 # 1024
-        self.display_height = 480 # 600
-        self.fps = fps
+        self.display_width = 640
+        self.display_height = 480
         self.frame_list = []
         self.counter = 0
         self.pause = False
@@ -359,6 +409,8 @@ class VideoRecording(QThread, object):
         self.chopped_frames_temp = len(self.frame_list) - 1
         self.recap_frames = 0
         self.recap = False
+        self.fps = 60
+        self.fast_forward = False
  
         # Capture RTSP stream
         while(True):
@@ -382,10 +434,10 @@ class VideoRecording(QThread, object):
                     break
  
             while self.rewind:
-                # if(self.chopped_frames == 0):
-                #     self.rewind == False
-                #     break
-                imutils.resize(self.frame_list[self.chopped_frames_temp], width=min(400, frame.shape[1]))
+                if(self.chopped_frames == 0):
+                    self.rewind == False
+                    break
+                imutils.resize(self.frame_list[self.chopped_frames_temp], width=854, height=480)
                 self.change_pixels_obj.emit(self.frame_list[self.chopped_frames_temp])
                 if cv2.waitKey(self.fps) & 0xFF == ord('q'):
                     break
@@ -401,12 +453,14 @@ class VideoRecording(QThread, object):
                     self.play = False
                     self.recap = True
                     break
-                if(self.play == True):
+                if(self.fast_forward == True):
                     self.chopped_frames = self.chopped_frames_temp
                     self.recap_frames = self.chopped_frames
                     self.rewind = False
                     self.play = False
                     self.recap = True
+                    self.fast_forward = False
+                    self.fps = 60
                     break
  
             while self.pause == True:
@@ -416,7 +470,7 @@ class VideoRecording(QThread, object):
                     break
  
             while self.recap:
-                imutils.resize(self.frame_list[self.recap_frames], width=min(400, frame.shape[1]))
+                imutils.resize(self.frame_list[self.recap_frames], width=854, height=480)
                 self.change_pixels_obj.emit(self.frame_list[self.recap_frames])
                 if cv2.waitKey(self.fps) & 0xFF == ord('q'):
                     break
@@ -435,13 +489,10 @@ class VideoRecording(QThread, object):
  
             if ret and (self.recap == False):
                 # Resize image for better detection
-                imutils.resize(frame, width=min(400, frame.shape[1]))
+                imutils.resize(frame, width=854, height=480)
                 self.change_pixels_obj.emit(frame)
                 if cv2.waitKey(self.fps) & 0xFF == ord('q'):
                     break
-                if ord('p'):
-                # if cv2.waitKey(1) == ord('p'):
-                    cv2.waitKey(-1)
                 self.frame_list.append(frame)
                 self.total_frames += 1
             
